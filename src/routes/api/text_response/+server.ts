@@ -47,6 +47,11 @@ function validateStep(step: unknown): step is Step {
 	return (
 		typeof step === 'object' &&
 		step !== null &&
+		s.id !== undefined &&
+		s.prompt !== undefined &&
+		s.correct_next !== undefined &&
+		s.correct_action !== undefined &&
+		s.incorrect_options !== undefined &&
 		typeof s.id === 'number' &&
 		typeof s.prompt === 'string' &&
 		(typeof s.correct_next === 'number' || s.correct_next === null) &&
@@ -62,6 +67,9 @@ function validateHVACScenario(data: unknown): data is HVACScenario {
 		return (
 			typeof data === 'object' &&
 			data !== null &&
+			d.scenario !== undefined &&
+			d.root_cause_analysis !== undefined &&
+			d.steps !== undefined &&
 			typeof d.scenario === 'string' &&
 			typeof d.root_cause_analysis === 'string' &&
 			Array.isArray(d.steps) &&
