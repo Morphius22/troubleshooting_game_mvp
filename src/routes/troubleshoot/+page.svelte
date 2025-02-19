@@ -38,8 +38,10 @@
 
 	// State
 	let currentStepIndex = 0;
+	let currentXP = 0;
 	let currentFeedback: Feedback = null;
 	let canProgress = false;
+	let stepAttempts = new Set<number>();
 
 	// Derived values
 	$: currentStep = data.scenario.steps[currentStepIndex];
@@ -62,12 +64,25 @@
 
 	// Event handlers
 	function handleOptionSelect(option: Option) {
+		const isFirstAttempt = !stepAttempts.has(currentStep.id);
+		stepAttempts.add(currentStep.id);
+
 		if (option.isCorrect) {
-			currentFeedback = { message: "Correct! Click 'Next' to continue." };
+			if (isFirstAttempt) {
+				currentXP += 10;
+				currentFeedback = {
+					message: "Correct! +10 XP. Click 'Next' to continue."
+				};
+			} else {
+				currentFeedback = {
+					message: "Correct! Click 'Next' to continue."
+				};
+			}
 			canProgress = !isComplete;
 		} else {
+			currentXP -= 5;
 			currentFeedback = {
-				message: option.feedback || "That's not correct. Try again.",
+				message: `${option.feedback || "That's not correct. Try again!"} (-5 XP)`,
 				severity: option.severity
 			};
 		}
@@ -87,6 +102,12 @@
 </script>
 
 <div class="min-h-screen bg-gray-50 px-3 py-3 sm:px-4 sm:py-4">
+	<!-- XP Counter -->
+	<div class="fixed right-4 top-4 rounded-lg bg-white px-4 py-2 shadow-sm">
+		<span class="font-medium text-gray-900">{currentXP} XP</span>
+	</div>
+
+	<!-- Back Button -->
 	<button
 		class="mb-4 inline-flex items-center gap-1 rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
 		on:click={goBack}
@@ -105,6 +126,7 @@
 		<!-- Completion State -->
 		<div class="mx-auto max-w-3xl rounded-lg bg-green-50 p-4">
 			<h2 class="mb-2 text-lg font-bold sm:text-xl">Scenario Complete!</h2>
+			<p class="mb-4 text-gray-700">Final Score: {currentXP} XP</p>
 			<FeedbackForm />
 		</div>
 	{:else}

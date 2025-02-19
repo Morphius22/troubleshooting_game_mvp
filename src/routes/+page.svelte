@@ -28,7 +28,6 @@
 		// Near entry of your product, init Mixpanel
 		mixpanel.init(PUBLIC_MIXPANEL_PROJECT_TOKEN, {
 			debug: true,
-			track_pageview: true,
 			persistence: 'localStorage',
 			ignore_dnt: true
 		});

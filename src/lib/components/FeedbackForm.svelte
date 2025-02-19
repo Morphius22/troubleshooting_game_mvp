@@ -52,7 +52,9 @@
 		</div>
 
 		<div class="space-y-2">
-			<label for="feedback" class="block text-sm font-medium">Additional Feedback (optional)</label>
+			<label for="feedback" class="block text-sm font-medium"
+				>Can you tell us more? Your feedback is super helpful! (optional)</label
+			>
 			<textarea
 				id="feedback"
 				bind:value={feedbackText}
