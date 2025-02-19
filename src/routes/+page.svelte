@@ -123,6 +123,7 @@
 				<!-- Scenario box -->
 				<p class="mb-3 text-lg font-bold">Loading Scenario:</p>
 				<p class="mb-3 text-lg">{searchQuery}</p>
+				<p class="mb-3 text-sm text-gray-500">this can take a few seconds...</p>
 				<div class="mb-6 rounded-lg bg-gray-100 p-4">
 					<div class="mb-3 h-6 w-32 rounded bg-gray-200"></div>
 					<div class="h-20 rounded bg-gray-200"></div>

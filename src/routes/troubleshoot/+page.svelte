@@ -3,6 +3,7 @@
 	import FeedbackForm from '$lib/components/FeedbackForm.svelte';
 	import { browser } from '$app/environment';
 	import mixpanel from 'mixpanel-browser';
+	import { goto } from '$app/navigation';
 
 	if (browser) {
 		mixpanel.identify('USER_ID');
@@ -67,9 +68,27 @@
 			canProgress = false;
 		}
 	}
+
+	function goBack() {
+		goto('/');
+	}
 </script>
 
 <div class="min-h-screen bg-gray-50 px-3 py-3 sm:px-4 sm:py-4">
+	<button
+		class="mb-4 inline-flex items-center gap-1 rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+		on:click={goBack}
+	>
+		<svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+			<path
+				fill-rule="evenodd"
+				d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z"
+				clip-rule="evenodd"
+			/>
+		</svg>
+		Back
+	</button>
+
 	{#if isComplete}
 		<!-- Completion State -->
 		<div class="mx-auto max-w-3xl rounded-lg bg-green-50 p-4">
