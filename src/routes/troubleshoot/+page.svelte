@@ -2,13 +2,28 @@
 	import type { PageData } from './$types';
 	import FeedbackForm from '$lib/components/FeedbackForm.svelte';
 	import { browser } from '$app/environment';
-	import mixpanel from 'mixpanel-browser';
 	import { goto } from '$app/navigation';
+	import mixpanel from 'mixpanel-browser';
+
+	export let data: PageData;
+	console.log('data', data);
 
 	if (browser) {
-		mixpanel.identify('USER_ID');
+		// Just track the page view, no need to initialize again
 		mixpanel.track('page_viewed', {
-			property: 'troubleshoot'
+			page_name: 'troubleshoot',
+			...data.userParams
+		});
+	}
+
+	// Track completion when isComplete becomes true
+	$: if (browser && isComplete) {
+		mixpanel.track('scenario_completed', {
+			property: 'troubleshooting game',
+			scenario: data.scenario.scenario,
+			steps_taken: currentStepIndex + 1,
+			search_query: data.userParams.query,
+			...data.userParams
 		});
 	}
 
@@ -20,9 +35,6 @@
 		feedback?: string;
 		severity?: string;
 	};
-
-	// Props
-	export let data: PageData;
 
 	// State
 	let currentStepIndex = 0;

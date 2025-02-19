@@ -3,6 +3,10 @@
 	import mixpanel from 'mixpanel-browser';
 	import { browser } from '$app/environment';
 	import { PUBLIC_MIXPANEL_PROJECT_TOKEN } from '$env/static/public';
+	import { page } from '$app/stores';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
 
 	type Level = 'beginner' | 'medium' | 'challenging';
 
@@ -29,16 +33,18 @@
 			ignore_dnt: true
 		});
 
-		mixpanel.identify('USER_ID');
+		mixpanel.identify(data.userParams.id ?? '');
 
 		mixpanel.people.set({
-			name: 'Jane Doe',
-			email: 'jane.doe@example.com',
-			plan: 'Premium'
+			name: data.userParams.name ?? '',
+			email: data.userParams.email ?? '',
+			institution: data.userParams.institution ?? '',
+			phone_number: data.userParams.phone_number ?? ''
 		});
 
 		mixpanel.track('page_viewed', {
-			property: 'home'
+			page_name: 'home',
+			...data.userParams
 		});
 	}
 
@@ -109,7 +115,10 @@
 	async function handleSearch() {
 		if (searchQuery.trim()) {
 			isSearching = true;
-			await goto(`/troubleshoot?q=${encodeURIComponent(searchQuery)}`, {
+			const params = new URLSearchParams($page.url.searchParams); // Copy existing params
+			params.set('q', searchQuery); // Add search query
+
+			await goto(`/troubleshoot?${params.toString()}`, {
 				invalidateAll: true
 			});
 		}
@@ -148,7 +157,7 @@
 	</div>
 {:else}
 	<div class="flex w-full flex-col items-center px-4 pb-8 pt-4">
-		<div class="mb-6 w-full max-w-2xl text-center">
+		<div class="mb-6 w-full max-w-2xl">
 			<h1 class="mb-2 text-2xl font-bold text-gray-900">HVAC Training Scenarios</h1>
 			<p class="px-4 text-base text-gray-600">
 				Practice real-world repairs with interactive scenarios. Tap any card to begin.
