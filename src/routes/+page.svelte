@@ -1,8 +1,21 @@
-<script lang="js">
+<script lang="ts">
 	import { goto } from '$app/navigation';
 	import mixpanel from 'mixpanel-browser';
 	import { browser } from '$app/environment';
 	import { PUBLIC_MIXPANEL_PROJECT_TOKEN } from '$env/static/public';
+
+	type Level = 'beginner' | 'medium' | 'challenging';
+
+	interface Card {
+		title: string;
+		level: Level;
+	}
+
+	interface GroupedCards {
+		beginner?: Card[];
+		medium?: Card[];
+		challenging?: Card[];
+	}
 
 	let searchQuery = '';
 	let isSearching = false;
@@ -29,8 +42,7 @@
 		});
 	}
 
-	// Group cards by level
-	const cards = [
+	const cards: Card[] = [
 		{
 			title: 'Replace a capacitor on a residential hvac system',
 			level: 'beginner'
@@ -80,15 +92,15 @@
 		}
 	];
 
-	const groupedCards = cards.reduce((acc, card) => {
+	const groupedCards = cards.reduce<GroupedCards>((acc, card) => {
 		if (!acc[card.level]) {
 			acc[card.level] = [];
 		}
-		acc[card.level].push(card);
+		acc[card.level]?.push(card);
 		return acc;
 	}, {});
 
-	const levelColors = {
+	const levelColors: Record<Level, string> = {
 		beginner: 'bg-emerald-50 text-emerald-700',
 		medium: 'bg-amber-50 text-amber-700',
 		challenging: 'bg-rose-50 text-rose-700'
@@ -161,7 +173,7 @@
 										</p>
 										<span
 											class="inline-block rounded-full px-4 py-1.5 text-sm font-medium capitalize {levelColors[
-												card.level
+												card.level as Level
 											]}"
 										>
 											{card.level}

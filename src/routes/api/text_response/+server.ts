@@ -29,37 +29,43 @@ function isValidSeverity(severity: string): severity is 'low' | 'medium' | 'high
 }
 
 function validateIncorrectOption(option: unknown): option is IncorrectOption {
+	const opt = option as Partial<IncorrectOption>;
 	return (
 		typeof option === 'object' &&
 		option !== null &&
-		typeof (option as any).choice === 'string' &&
-		typeof (option as any).feedback === 'string' &&
-		isValidSeverity((option as any).severity)
+		opt.choice !== undefined &&
+		opt.feedback !== undefined &&
+		opt.severity !== undefined &&
+		typeof opt.choice === 'string' &&
+		typeof opt.feedback === 'string' &&
+		isValidSeverity(opt.severity)
 	);
 }
 
 function validateStep(step: unknown): step is Step {
+	const s = step as Partial<Step>;
 	return (
 		typeof step === 'object' &&
 		step !== null &&
-		typeof (step as any).id === 'number' &&
-		typeof (step as any).prompt === 'string' &&
-		(typeof (step as any).correct_next === 'number' || (step as any).correct_next === null) &&
-		typeof (step as any).correct_action === 'string' &&
-		Array.isArray((step as any).incorrect_options) &&
-		(step as any).incorrect_options.every(validateIncorrectOption)
+		typeof s.id === 'number' &&
+		typeof s.prompt === 'string' &&
+		(typeof s.correct_next === 'number' || s.correct_next === null) &&
+		typeof s.correct_action === 'string' &&
+		Array.isArray(s.incorrect_options) &&
+		s.incorrect_options?.every(validateIncorrectOption)
 	);
 }
 
 function validateHVACScenario(data: unknown): data is HVACScenario {
+	const d = data as Partial<HVACScenario>;
 	try {
 		return (
 			typeof data === 'object' &&
 			data !== null &&
-			typeof (data as any).scenario === 'string' &&
-			typeof (data as any).root_cause_analysis === 'string' &&
-			Array.isArray((data as any).steps) &&
-			(data as any).steps.every(validateStep)
+			typeof d.scenario === 'string' &&
+			typeof d.root_cause_analysis === 'string' &&
+			Array.isArray(d.steps) &&
+			d.steps?.every(validateStep)
 		);
 	} catch {
 		return false;
