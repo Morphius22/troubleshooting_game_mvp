@@ -127,7 +127,14 @@
 		<div class="mx-auto max-w-3xl rounded-lg bg-green-50 p-4">
 			<h2 class="mb-2 text-lg font-bold sm:text-xl">Scenario Complete!</h2>
 			<p class="mb-4 text-gray-700">Final Score: {currentXP} XP</p>
-			<FeedbackForm />
+			<FeedbackForm
+				email={data.userParams.email}
+				name={data.userParams.name}
+				institution={data.userParams.institution}
+				phone_number={data.userParams.phone_number}
+				moodle_id={data.userParams.id}
+				query={data.userParams.query}
+			/>
 		</div>
 	{:else}
 		<!-- Scenario Description -->

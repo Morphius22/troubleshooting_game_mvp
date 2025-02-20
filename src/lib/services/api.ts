@@ -39,6 +39,12 @@ export async function fetchGoogleImages(
 interface FeedbackData {
 	rating: number;
 	feedback_text: string;
+	email: string | null;
+	name: string | null;
+	institution: string | null;
+	phone_number: string | null;
+	moodle_id: string | null;
+	query: string | null;
 }
 
 export async function saveFeedback(feedbackData: FeedbackData) {

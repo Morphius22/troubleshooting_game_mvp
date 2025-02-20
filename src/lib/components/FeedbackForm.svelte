@@ -7,6 +7,14 @@
 	let isSubmitting = false;
 	let error: string | null = null;
 
+	//props
+	export let email: string | null = null;
+	export let name: string | null = null;
+	export let institution: string | null = null;
+	export let phone_number: string | null = null;
+	export let moodle_id: string | null = null;
+	export let query: string | null = null;
+
 	async function handleSubmit() {
 		if (rating === 0) {
 			error = 'Please select a rating';
@@ -19,7 +27,13 @@
 		try {
 			await saveFeedback({
 				rating,
-				feedback_text: feedbackText
+				feedback_text: feedbackText,
+				email,
+				name,
+				institution,
+				phone_number,
+				moodle_id,
+				query
 			});
 			goto('/'); // SvelteKit navigation
 		} catch (err) {
