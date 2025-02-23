@@ -17,10 +17,17 @@ interface Step {
 	incorrect_options: IncorrectOption[];
 }
 
+// Add new interface for recommendations
+interface RecommendedScenario {
+	title: string;
+}
+
+// Update HVACScenario interface
 interface HVACScenario {
 	scenario: string;
 	root_cause_analysis: string;
 	steps: Step[];
+	recommended_scenarios: RecommendedScenario[]; // New field
 }
 
 // Validation functions
@@ -61,6 +68,18 @@ function validateStep(step: unknown): step is Step {
 	);
 }
 
+// Add validation function for recommendations
+function validateRecommendedScenario(scenario: unknown): scenario is RecommendedScenario {
+	const s = scenario as Partial<RecommendedScenario>;
+	return (
+		typeof scenario === 'object' &&
+		scenario !== null &&
+		s.title !== undefined &&
+		typeof s.title === 'string'
+	);
+}
+
+// Update the main validation function
 function validateHVACScenario(data: unknown): data is HVACScenario {
 	const d = data as Partial<HVACScenario>;
 	try {
@@ -70,10 +89,14 @@ function validateHVACScenario(data: unknown): data is HVACScenario {
 			d.scenario !== undefined &&
 			d.root_cause_analysis !== undefined &&
 			d.steps !== undefined &&
+			d.recommended_scenarios !== undefined &&
 			typeof d.scenario === 'string' &&
 			typeof d.root_cause_analysis === 'string' &&
 			Array.isArray(d.steps) &&
-			d.steps?.every(validateStep)
+			Array.isArray(d.recommended_scenarios) &&
+			d.steps?.every(validateStep) &&
+			d.recommended_scenarios?.every(validateRecommendedScenario) &&
+			d.recommended_scenarios?.length === 2
 		);
 	} catch {
 		return false;
@@ -91,6 +114,7 @@ function processQuery(query: string): string {
 	return punctuatedQuery;
 }
 
+// Update system prompt
 const system_prompt = `[SYSTEM]
 You're an HVAC instructor creating troubleshooting simulations. The situation you are teaching is in the PROBLEM section. Follow NATE guidelines and manufacturer specs.
 
@@ -104,7 +128,11 @@ You're an HVAC instructor creating troubleshooting simulations. The situation yo
    - 2 incorrect choices = Common new technician errors
    - Feedback = Technical explanation + safety implications of the incorrect choices
 3. Include voltage checks and wiring analysis.
-4. Format as valid JSON with properly escaped quotes and no line breaks within strings. The JSON should match this schema:
+4. Generate 2 related follow-up scenarios that would help the technician build their knowledge:
+   - First scenario: A more complex problem with the same component
+   - Second scenario: A problem with a different component in the same type of system
+   - Each title should clearly describe the problem without mentioning specific components
+5. Format as valid JSON with properly escaped quotes and no line breaks within strings. The JSON should match this schema:
    {
      "scenario": string,
      "root_cause_analysis": string,
@@ -126,6 +154,14 @@ You're an HVAC instructor creating troubleshooting simulations. The situation yo
              "severity": "low"|"medium"|"high"
            }
          ]
+       }
+     ],
+     "recommended_scenarios": [
+       {
+         "title": string
+       },
+       {
+         "title": string
        }
      ]
    }`;

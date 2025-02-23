@@ -44,7 +44,7 @@
 </script>
 
 <div class="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
-	<h2 class="text-xl font-semibold">How was your experience?</h2>
+	<h2 class="text-xl font-semibold">Rate This Scenario</h2>
 
 	<form on:submit|preventDefault={handleSubmit} class="space-y-4">
 		<div class="space-y-2">
