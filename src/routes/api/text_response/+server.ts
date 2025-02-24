@@ -122,9 +122,17 @@ You're an HVAC instructor creating troubleshooting simulations. The situation yo
 {QUERY}
 
 [REQUIREMENTS]
-1. Generate the troubleshooting steps for the problem. Be as concise as possible, but don't leave our crucial information.
+1. Generate the troubleshooting steps for the problem. For each step:
+   - Prompt should be an open-ended question about what to do next
+   - Follow NATE guidelines and manufacturer specs for the problem
+   - Don't give away the answer in the question
+   - Focus on decision-making ("What should you do next?" rather than "Identify the capacitor")
+   - Frame questions from the technician's perspective
+   - Always start with safety steps first before diagnosing the problem
+   - Make sure to include all the steps that are needed to diagnose and fix the problem. Including the root cause analysis, turning the unit on to make sure the system is working, etc.
+   - Be thorough. Do not miss or skip any steps. You should be doing this at the level of an expert technician.
 2. For each step, create 2 incorrect choices and 1 correct choice:
-   - Correct action = Standard diagnostic procedure
+   - Correct action = Standard diagnostic procedure according to NATE guidelines and manufacturer specs
    - 2 incorrect choices = Common new technician errors
    - Feedback = Technical explanation + safety implications of the incorrect choices
 3. Include voltage checks and wiring analysis.
@@ -164,7 +172,21 @@ You're an HVAC instructor creating troubleshooting simulations. The situation yo
          "title": string
        }
      ]
-   }`;
+   }
+	 [CRITICAL FORMAT REQUIREMENTS]
+		1. Steps must be numbered starting from 1
+		2. Each step must have a unique ID number
+		3. correct_next must be the ID of the next step or null for the final step
+		4. All steps must be properly connected in sequence
+   
+	IMPORTANT JSON FORMATTING RULES:
+1. Use double quotes for all strings
+2. Include all array elements with proper brackets []
+3. Ensure all arrays have complete elements
+4. No shorthand [Array] notation allowed
+5. No line breaks within strings
+6. Properly escape any quotes within strings
+7. End each array and object with proper closing brackets/braces`;
 
 export async function POST({ request }) {
 	try {

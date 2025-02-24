@@ -46,6 +46,17 @@
 	let stepAttempts = new Set<number>();
 	let loadingScenarioTitle: string | null = null;
 
+	// Initialize audio only in browser
+	let correctSound: HTMLAudioElement;
+	let incorrectSound: HTMLAudioElement;
+	if (browser) {
+		correctSound = new Audio('/sounds/correct_answer.mp3');
+		incorrectSound = new Audio('/sounds/incorrect_answer.mp3');
+	}
+
+	// Add a Map to store shuffled options for each step
+	let shuffledOptionsMap = new Map<number, Option[]>();
+
 	// Derived values
 	$: currentStep = data.scenario.steps[currentStepIndex];
 	$: options = currentStep ? shuffleOptions(currentStep) : [];
@@ -53,6 +64,13 @@
 
 	// Utility functions
 	function shuffleOptions(step: (typeof data.scenario.steps)[0]): Option[] {
+		// If we already shuffled this step's options before...
+		if (shuffledOptionsMap.has(step.id)) {
+			// ...return those same shuffled options
+			return shuffledOptionsMap.get(step.id)!;
+		}
+
+		// If we haven't shuffled this step's options yet...
 		const allOptions = [
 			{ text: step.correct_action, isCorrect: true },
 			...step.incorrect_options.map((opt: any) => ({
@@ -62,7 +80,15 @@
 				severity: opt.severity
 			}))
 		];
-		return [...allOptions].sort(() => Math.random() - 0.5);
+
+		// Shuffle them once
+		const shuffled = [...allOptions].sort(() => Math.random() - 0.5);
+
+		// Store them for this step
+		shuffledOptionsMap.set(step.id, shuffled);
+
+		// Return the shuffled options
+		return shuffled;
 	}
 
 	// Event handlers
@@ -71,6 +97,11 @@
 		stepAttempts.add(currentStep.id);
 
 		if (option.isCorrect) {
+			// Play sound effect when correct
+			if (browser) {
+				correctSound?.play().catch(() => {}); // Ignore errors if sound fails to play
+			}
+
 			if (isFirstAttempt) {
 				currentXP += 10;
 				currentFeedback = {
@@ -83,6 +114,10 @@
 			}
 			canProgress = !isComplete;
 		} else {
+			if (browser) {
+				incorrectSound?.play().catch(() => {}); // Ignore errors if sound fails to play
+			}
+
 			currentXP -= 5;
 			currentFeedback = {
 				message: `${option.feedback || "That's not correct. Try again!"} (-5 XP)`,
@@ -213,7 +248,7 @@
 				<!-- Feedback -->
 				{#if currentFeedback}
 					<div
-						class="mt-4 rounded p-3 text-sm sm:text-base"
+						class="feedback-animation mt-4 rounded p-3 text-sm sm:text-base"
 						class:bg-green-100={!currentFeedback.severity}
 						class:bg-yellow-100={currentFeedback.severity === 'low'}
 						class:bg-orange-100={currentFeedback.severity === 'medium'}
@@ -236,3 +271,21 @@
 		{/if}
 	</div>
 {/if}
+
+<style>
+	@keyframes feedbackPop {
+		0% {
+			transform: scale(1);
+		}
+		50% {
+			transform: scale(1.02);
+		}
+		100% {
+			transform: scale(1);
+		}
+	}
+
+	.feedback-animation {
+		animation: feedbackPop 0.3s ease-out;
+	}
+</style>
