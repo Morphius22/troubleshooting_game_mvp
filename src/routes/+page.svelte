@@ -111,6 +111,18 @@
 		challenging: 'bg-rose-50 text-rose-700'
 	};
 
+	const levelIcons: Record<Level, string> = {
+		beginner: `<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+		</svg>`,
+		medium: `<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+		</svg>`,
+		challenging: `<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+		</svg>`
+	};
+
 	async function handleSearch() {
 		if (searchQuery.trim()) {
 			const params = new URLSearchParams($page.url.searchParams);
@@ -126,56 +138,75 @@
 {#if $navigating}
 	<LoadingSkeleton scenarioTitle={searchQuery} />
 {:else}
-	<div class="flex w-full flex-col items-center px-4 pb-8 pt-4">
-		<div class="mb-6 w-full max-w-2xl">
-			<h1 class="mb-2 text-2xl font-bold text-gray-900">HVAC Training Scenarios</h1>
-			<p class="px-4 text-base text-gray-600">
-				Practice real-world repairs with interactive scenarios. Tap any card to begin.
-			</p>
-		</div>
+	<div class="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 px-3 py-4 sm:px-4 sm:py-6">
+		<div class="mx-auto max-w-4xl">
+			<!-- Header -->
+			<div class="mb-8 sm:mb-10">
+				<h1 class="text-xl font-bold text-gray-900 sm:text-2xl">HVAC Troubleshooting Scenarios</h1>
+				<p class="mt-2 text-sm text-gray-600 sm:text-base">
+					Practice diagnosing and fixing common HVAC issues with interactive scenarios.
+				</p>
+			</div>
 
-		<div class="w-full max-w-2xl">
+			<!-- Difficulty Levels -->
 			{#each Object.entries(groupedCards) as [level, levelCards]}
-				<div class="mb-6">
-					<div class="space-y-4">
+				<div class="mb-8">
+					<div class="mb-3 flex items-center gap-2">
+						<h2 class="text-lg font-semibold capitalize text-gray-800 sm:text-xl">{level}</h2>
+						<div class="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100">
+							{@html levelIcons[level as Level]}
+						</div>
+					</div>
+
+					<div class="space-y-3">
 						{#each levelCards as card}
 							<button
-								class="group w-full rounded-xl bg-white p-6 text-left shadow-sm transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 active:bg-gray-50"
+								class="group w-full overflow-hidden rounded-xl bg-white p-4 text-left shadow-sm transition hover:shadow-md sm:p-5"
 								on:click={() => {
 									searchQuery = card.title;
 									handleSearch();
 								}}
 							>
-								<div class="flex items-start gap-3">
+								<div class="flex items-start justify-between gap-4">
 									<div class="flex-1">
-										<p class="mb-3 text-lg font-medium text-gray-900">
+										<p class="text-sm font-medium text-gray-900 sm:text-base">
 											{card.title}
 										</p>
-										<span
-											class="inline-block rounded-full px-4 py-1.5 text-sm font-medium capitalize {levelColors[
-												card.level as Level
-											]}"
-										>
-											{card.level}
-										</span>
+										<div class="mt-2 flex items-center gap-2">
+											<span
+												class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium sm:text-sm {levelColors[
+													card.level as Level
+												]}"
+											>
+												{@html levelIcons[card.level as Level]}
+												{card.level}
+											</span>
+										</div>
 									</div>
-									<svg
-										class="mt-1.5 h-6 w-6 flex-shrink-0 text-gray-400"
-										viewBox="0 0 20 20"
-										fill="currentColor"
+									<div
+										class="rounded-full bg-indigo-50 p-2 text-indigo-600 opacity-70 transition group-hover:bg-indigo-100 group-hover:opacity-100"
 									>
-										<path
-											fill-rule="evenodd"
-											d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-											clip-rule="evenodd"
-										/>
-									</svg>
+										<svg class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
+											<path
+												fill-rule="evenodd"
+												d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+												clip-rule="evenodd"
+											/>
+										</svg>
+									</div>
 								</div>
 							</button>
 						{/each}
 					</div>
 				</div>
 			{/each}
+
+			<!-- Footer -->
+			<div
+				class="mt-8 rounded-lg bg-white p-4 text-center text-sm text-gray-500 shadow-sm sm:p-5 sm:text-base"
+			>
+				<p>Select a scenario above to start troubleshooting.</p>
+			</div>
 		</div>
 	</div>
 {/if}
