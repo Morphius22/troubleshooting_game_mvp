@@ -135,7 +135,19 @@
 	}
 
 	function goBack() {
-		goto('/');
+		// Create new params object and add ALL user parameters from data
+		const params = new URLSearchParams();
+
+		// Add all original user parameters
+		if (data.userParams.id) params.set('id', data.userParams.id);
+		if (data.userParams.email) params.set('email', data.userParams.email);
+		if (data.userParams.lang) params.set('lang', data.userParams.lang);
+		if (data.userParams.phone_number) params.set('number', data.userParams.phone_number);
+		if (data.userParams.name) params.set('name', data.userParams.name);
+		if (data.userParams.institution) params.set('institution', data.userParams.institution);
+
+		// Navigate back to home with parameters
+		goto(`/?${params.toString()}`);
 	}
 
 	async function loadNewScenario(scenarioTitle: string) {
@@ -148,8 +160,18 @@
 		canProgress = false;
 		stepAttempts = new Set<number>();
 
-		// Preserve all existing URL parameters except 'q'
-		const params = new URLSearchParams(window.location.search);
+		// Create new params object and add ALL user parameters from data
+		const params = new URLSearchParams();
+
+		// Add all original user parameters
+		if (data.userParams.id) params.set('id', data.userParams.id);
+		if (data.userParams.email) params.set('email', data.userParams.email);
+		if (data.userParams.lang) params.set('lang', data.userParams.lang);
+		if (data.userParams.phone_number) params.set('number', data.userParams.phone_number);
+		if (data.userParams.name) params.set('name', data.userParams.name);
+		if (data.userParams.institution) params.set('institution', data.userParams.institution);
+
+		// Set the new query parameter
 		params.set('q', encodeURIComponent(scenarioTitle));
 
 		mixpanel.track('starting_recommended_scenario', {
