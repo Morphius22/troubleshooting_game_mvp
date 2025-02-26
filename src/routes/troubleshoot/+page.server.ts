@@ -1,5 +1,11 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
+import { getScenarioByQuery } from '$lib/supabase/scenario';
+import Mixpanel from 'mixpanel';
+import { PUBLIC_MIXPANEL_PROJECT_TOKEN } from '$env/static/public';
+
+// Initialize Mixpanel for server-side tracking
+const mixpanel = Mixpanel.init(PUBLIC_MIXPANEL_PROJECT_TOKEN);
 
 interface UserParams {
 	id: string | null;
@@ -26,6 +32,27 @@ export const load: PageServerLoad = async ({ url, fetch }) => {
 		throw error(400, 'No query provided');
 	}
 
+	// Track scenario started event
+	mixpanel.track('scenario_started', {
+		distinct_id: userParams.id || 'anonymous',
+		scenario_title: userParams.query,
+		$ip: 0, // Required to enable geolocation for server-side events
+		email: userParams.email,
+		name: userParams.name,
+		institution: userParams.institution
+	});
+
+	console.log('Fetching scenario from database for query:', userParams.query);
+	// First, try to get the scenario from the database
+	const cachedScenario = await getScenarioByQuery(userParams.query);
+
+	if (cachedScenario) {
+		console.log('Using cached scenario for query:', userParams.query);
+		return { scenario: cachedScenario, userParams };
+	}
+
+	// If not in database, fetch from API
+	console.log('Fetching new scenario for query:', userParams.query);
 	const response = await fetch('/api/text_response', {
 		method: 'POST',
 		headers: {

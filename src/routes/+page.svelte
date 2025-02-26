@@ -49,7 +49,7 @@
 
 	const cards: Card[] = [
 		{
-			title: 'Replace a capacitor on a residential hvac system',
+			title: 'replace a capacitor on a residential hvac system',
 			level: 'beginner'
 		},
 		{
