@@ -62,3 +62,36 @@ export async function getScenarioByQuery(query: string): Promise<HVACScenario | 
 		throw err; // Re-throw to be handled by the caller
 	}
 }
+
+// Get a scenario by its ID
+export async function getScenarioById(id: number): Promise<HVACScenario | null> {
+	try {
+		console.log('Fetching scenario from Supabase for ID:', id);
+
+		const { data, error } = await supabase.from('scenarios').select('*').eq('id', id).single();
+
+		// Handle "not found" error separately from other errors
+		if (error) {
+			if (error.code === 'PGRST116') {
+				// This is the "not found" error code from PostgREST
+				console.log(`No cached scenario found for ID: ${id}`);
+				return null;
+			}
+
+			// Log other database errors
+			console.error('Supabase error when fetching scenario by ID:', error);
+			throw new Error(`Database error: ${error.message}`);
+		}
+
+		if (!data) {
+			console.log(`No data returned for ID: ${id}`);
+			return null;
+		}
+
+		return data.scenario as HVACScenario;
+	} catch (err) {
+		// Catch any other unexpected errors
+		console.error('Unexpected error fetching scenario from Supabase:', err);
+		throw err; // Re-throw to be handled by the caller
+	}
+}

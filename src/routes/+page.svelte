@@ -12,6 +12,7 @@
 	type Level = 'beginner' | 'medium' | 'challenging';
 
 	interface Card {
+		id: number;
 		title: string;
 		level: Level;
 	}
@@ -49,48 +50,58 @@
 
 	const cards: Card[] = [
 		{
+			id: 1,
 			title: 'replace a capacitor on a residential hvac system',
 			level: 'beginner'
 		},
 		{
+			id: 4,
 			title:
 				'The screen on a residential thermostat is not working. Diagnose what is wrong and fix it.',
 			level: 'challenging'
 		},
 		{
+			id: 2,
 			title: 'Do a preventative maintenance on an air sourced residential heat pump',
 			level: 'beginner'
 		},
 		{
+			id: 3,
 			title:
 				'The condensate drain line on a residential heat pump is clogged. Diagnose what is wrong and fix it.',
 			level: 'beginner'
 		},
 		{
+			id: 5,
 			title:
 				'A low voltage fault is detected on a residential heat pump. The unit is unresponsive. Diagnose what is wrong and fix it.',
 			level: 'challenging'
 		},
 		{
+			id: 6,
 			title:
 				'A residential heat pump might be low on refrigerant. Check the refrigerant level and add if necessary.',
 			level: 'medium'
 		},
 		{
+			id: 7,
 			title:
 				'The contactor on a residential heat pump is stuck. Diagnose what is wrong and fix it.',
 			level: 'medium'
 		},
 		{
+			id: 8,
 			title: 'A residential heat pumps outdoor unit is frozen up.',
 			level: 'medium'
 		},
 		{
+			id: 9,
 			title:
 				'The reversing valve on a residential heat pump is stuck in one mode. Diagnose what is wrong and fix it.',
 			level: 'challenging'
 		},
 		{
+			id: 10,
 			title:
 				'A residential heat pump is not blowing air. The outdoor unit is running but the indoor unit is not. Diagnose what is wrong and fix it.',
 			level: 'challenging'
@@ -123,10 +134,11 @@
 		</svg>`
 	};
 
-	async function handleSearch() {
+	async function handleSearch(scenario_id: number) {
 		if (searchQuery.trim()) {
 			const params = new URLSearchParams($page.url.searchParams);
 			params.set('q', searchQuery);
+			params.set('scenario_id', scenario_id.toString());
 
 			await goto(`/troubleshoot?${params.toString()}`, {
 				invalidateAll: true
@@ -164,7 +176,7 @@
 								class="group w-full overflow-hidden rounded-xl bg-white p-4 text-left shadow-sm transition hover:shadow-md sm:p-5"
 								on:click={() => {
 									searchQuery = card.title;
-									handleSearch();
+									handleSearch(card.id);
 								}}
 							>
 								<div class="flex items-start justify-between gap-4">

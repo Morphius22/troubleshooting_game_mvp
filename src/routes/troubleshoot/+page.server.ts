@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { getScenarioByQuery } from '$lib/supabase/scenario';
+import { getScenarioById } from '$lib/supabase/scenario';
 import Mixpanel from 'mixpanel';
 import { PUBLIC_MIXPANEL_PROJECT_TOKEN } from '$env/static/public';
 
@@ -15,6 +15,7 @@ interface UserParams {
 	name: string | null;
 	institution: string | null;
 	query: string | null;
+	scenario_id: number | null;
 }
 
 export const load: PageServerLoad = async ({ url, fetch }) => {
@@ -25,7 +26,10 @@ export const load: PageServerLoad = async ({ url, fetch }) => {
 		phone_number: url.searchParams.get('number'),
 		name: url.searchParams.get('name'),
 		institution: url.searchParams.get('institution'),
-		query: url.searchParams.get('q')
+		query: url.searchParams.get('q'),
+		scenario_id: url.searchParams.get('scenario_id')
+			? parseInt(url.searchParams.get('scenario_id')!)
+			: null
 	};
 
 	if (!userParams.query) {
@@ -43,11 +47,15 @@ export const load: PageServerLoad = async ({ url, fetch }) => {
 	});
 
 	console.log('Fetching scenario from database for query:', userParams.query);
-	// First, try to get the scenario from the database
-	const cachedScenario = await getScenarioByQuery(userParams.query);
+	// Try to get scenario by ID first (if available)
+	let cachedScenario = null;
+	if (userParams.scenario_id) {
+		console.log('Fetching scenario from database by ID:', userParams.scenario_id);
+		cachedScenario = await getScenarioById(userParams.scenario_id);
+	}
 
 	if (cachedScenario) {
-		console.log('Using cached scenario for query:', userParams.query);
+		console.log('Using cached scenario', cachedScenario);
 		return { scenario: cachedScenario, userParams };
 	}
 
