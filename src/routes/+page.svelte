@@ -55,12 +55,6 @@
 			level: 'beginner'
 		},
 		{
-			id: 4,
-			title:
-				'The screen on a residential thermostat is not working. Diagnose what is wrong and fix it.',
-			level: 'challenging'
-		},
-		{
 			id: 2,
 			title: 'Do a preventative maintenance on an air sourced residential heat pump',
 			level: 'beginner'
@@ -70,6 +64,12 @@
 			title:
 				'The condensate drain line on a residential heat pump is clogged. Diagnose what is wrong and fix it.',
 			level: 'beginner'
+		},
+		{
+			id: 4,
+			title:
+				'The screen on a residential thermostat is not working. Diagnose what is wrong and fix it.',
+			level: 'challenging'
 		},
 		{
 			id: 5,
